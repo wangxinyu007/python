@@ -1,0 +1,974 @@
+*** Settings ***
+Library           requests
+Library           Selenium2Library
+Library           RequestsLibrary
+Library           Collections
+Library           XML
+
+*** Variables ***
+${category}       ut-device
+${description}    31232
+${identifier}     120119
+${name}           120119
+${modelSource}    utyun
+${data1}          1
+
+*** Test Cases ***
+adadad
+    ${dict}    Create Dictionary    Content-Type=application/x-www-form-urlencoded    Authorization=Basic c3NvLWdhdGV3YXk6c3NvLWdhdGV3YXktc2VjcmV0
+    Create Session    api    https://oauthuat.utcook.com
+    ${data}    Create Dictionary    username=scf_dev    password=Ut123456    grant_type=password    scope=read
+    ${addr}    Post Request    api    /uaa/oauth/login    headers=${dict}    data=${data}
+    ${responsedata}    to json    ${addr.content}
+    Comment    log    ${responsedata}
+    Comment    ${key}    Get Dictionary keys    ${responsedata}
+    Comment    ${item}    Get Dictionary items    ${responsedata}
+    Comment    ${value}    Get Dictionary values    ${responsedata}
+    ${str}    Get from Dictionary    ${responsedata}    access_token
+    set suite variable    ${str}
+
+创建优模型-正常创建
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-name参数不填写
+    [Documentation]    创建优模型-name参数不填写
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    name:档案名不能为空; \
+    [Teardown]
+
+创建优模型-identifier参数不填写
+    [Documentation]    创建优模型-identifier参数不填写
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    identifier:模型标识符不能为空; \
+    [Teardown]
+
+创建优模型-category参数不填写
+    [Documentation]    创建优模型-category参数不填写
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    category:模型分类不能为空; \
+    [Teardown]
+
+创建优模型-description参数不填写
+    [Documentation]    创建优模型-category参数不填写
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-category为设备云，填写设备来源
+    [Documentation]    创建优模型-category为设备云，填写设备来源
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-device
+    ${modelSource}    Set Variable    utyun
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为设备云，不填写设备来源
+    [Documentation]    创建优模型-category为设备云，填写设备来源
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-device
+    ${modelSource}    Set Variable    utyun
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为静态来源，填写设备来源
+    [Documentation]    创建优模型-category为静态来源，填写设备来源
+    [Setup]
+    获取token
+    ${category}    Set Variable    flow-service
+    ${modelSource}    Set Variable    utyun
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为静态来源，不填写设备来源
+    [Documentation]    创建优模型-category为静态来源，填写设备来源
+    [Setup]
+    获取token
+    ${category}    Set Variable    flow-service
+    ${modelSource}    Set Variable    utyun
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为动态来源，填写设备来源
+    [Documentation]    创建优模型-category为动态来源，填写设备来源
+    [Setup]
+    获取token
+    ${category}    Set Variable    dynamic-flow
+    ${modelSource}    Set Variable    utyun
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为动态来源，不填写设备来源
+    [Documentation]    创建优模型-category为动态来源，填写设备来源
+    [Setup]
+    获取token
+    ${category}    Set Variable    dynamic-flow
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为后台，填写设备来源utyun
+    [Documentation]    创建优模型-category为后台，填写设备来源utyun
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-service
+    ${modelSource}    Set Variable    utyun
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为后台，填写设备来源为unilink
+    [Documentation]    创建优模型-category为后台，填写设备来源为unilink
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-service
+    ${modelSource}    Set Variable    unilink
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为后台，填写设备来源unicook
+    [Documentation]    创建优模型-category为后台，填写设备来源unicook
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-service
+    ${modelSource}    Set Variable    unicook
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为后台，不填写设备来源
+    [Documentation]    创建优模型-category为后台，不填写设备来源
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-service
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    log    ${msg}
+    Should Be Equal As Strings    ${msg}    模型来源字段不能为空
+    [Teardown]
+
+创建优模型-category为后台，填写设备来源 \ at
+    [Documentation]    创建优模型-category为后台，填写设备来源 \ at
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-service
+    ${modelSource}    Set Variable    at
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    modelSource:输入的模型来源无效; \
+    [Teardown]
+
+创建优模型-category为后台，填写设备来源空字符串
+    [Documentation]    创建优模型-category为后台，填写设备来源空字符串
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-service
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"at"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    modelSource:输入的模型来源无效; \
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为后台，填写设备来源为空格
+    [Documentation]    创建优模型-category为后台，填写设备来源为空格
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-service
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":" \ \ "}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    modelSource:输入的模型来源无效; \
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为后台，填写设备来源为字符串null
+    [Documentation]    创建优模型-category为后台，填写设备来源空字符串
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-service
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"null"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    modelSource:输入的模型来源无效; \
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category为后台，填写设备来源为数字类型null
+    [Documentation]    创建优模型-category为后台，填写设备来源空字符串
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-service
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":null}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    模型来源字段不能为空
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category 填写其他字符 at
+    [Documentation]    创建优模型-category 填写其他字符 at
+    [Setup]
+    获取token
+    ${category}    Set Variable    at
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    category:输入的模型分类无效; \
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category填写空格
+    [Documentation]    创建优模型-category填写空格
+    [Setup]
+    获取token
+    ${category}    Set Variable
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Comment    Should Be Equal As Strings    ${msg}    category:输入的模型分类无效; category:模型分类不能为空; \
+    Should Start With    ${msg}    category:
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category填写空字符串
+    [Documentation]    创建优模型-category填写空字符串
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    category:
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category填写空字符串null
+    [Documentation]    创建优模型-category填写空字符串
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"null","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    category:
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-category填写数字类型null
+    [Documentation]    创建优模型-category填写空字符串
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":null,"description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    category:
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-identifier填写空格
+    [Documentation]    创建优模型-category填写空格
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":" \ ","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    identifier
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-identifier填写空字符串
+    [Documentation]    创建优模型-category填写空字符串
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    identifier
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-identifier填写重复的
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    优模型标识符已存在
+    删除优模型    ${data1}
+
+创建优模型-identifier填写被删除的
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-identifier填写输入50字符
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${identifier}    Set Variable    12345678901234567890123456789012345678901234567890
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-identifier填写输入51字符
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${identifier}    Set Variable    012345678901234567890123456789012345678901234567890
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    identifier:不超过50个字符;
+
+创建优模型-identifier填写大小写字母，数字，下划线
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${identifier}    Set Variable    dasdDAF123_
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-identifier填写填写特殊字符——（&{}￥%……
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${identifier}    Set Variable    ————(*%{
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    identifier:标识符格式有误，仅支持字母，数字，下划线; \
+
+创建优模型-identifier填写字符串类型 null
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${identifier}    Set Variable    null
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-identifier填写数字类型null
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":null,"name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    identifier:模型标识符不能为空; \
+
+创建优模型-name填写空格
+    [Documentation]    创建优模型-category填写空格
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    name
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-name填写空字符串
+    [Documentation]    创建优模型-category填写空字符串
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":" \ \ ","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    name
+    删除优模型    ${data1}
+    [Teardown]
+
+创建优模型-name填写重复的
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    优模型标识符已存在
+    删除优模型    ${data1}
+
+创建优模型-name填写被删除的
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    删除优模型    ${data1}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-name填写输入30字符
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${name}    Set Variable    123456789012345678901234567890
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-name填写输入31字符
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${name}    Set Variable    1123456789012345678901234567891
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    name
+
+创建优模型-name填写中文，大小写字母，数字，下划线
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${name}    Set Variable    dasdDAF123_中文
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-name填写填写特殊字符——（&{}￥%……
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${name}    Set Variable    ————(*%{
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    name
+
+创建优模型-name填写字符串类型 null
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${name}    Set Variable    null
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型--name填写字符串类型NULL
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${name}    Set Variable    NULL
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-name填写数字类型null
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":${identifier},"name":null,"modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    name:档案名不能为空; \
+
+创建优模型--name填写数字类型NULL
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":${identifier},"name":NULL,"modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    400
+
+创建优模型-description填写数字类型长度为100
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${description}    Set Variable    1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567891
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":${identifier},"name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-description填写输入101字符
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${description}    Set Variable    12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678911
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    description
+
+创建优模型-description填写数字类型null
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":null,"identifier":${identifier},"name":${name},"modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-description填写字符串类型 null
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${description}    Set Variable    null
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+创建优模型-创建同一分类下的，相同标识符
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":${identifier},"name":${name},"modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${data2}    Set Variable    {"category":"${category}","description":"${description}","identifier":${identifier},"name":"312","modelSource":"${modelSource}"}
+    创建优模型    ${data2}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    优模型标识符已存在
+    删除优模型    ${data1}
+    删除优模型    ${data2}
+
+创建优模型-创建同一分类下的，相同名称
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${data2}    Set Variable    {"category":"${category}","description":"${description}","identifier":"fasdf","name":${name},"modelSource":"${modelSource}"}
+    创建优模型    ${data2}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    优模型名称已存在
+    删除优模型    ${data1}
+    删除优模型    ${data2}
+
+创建优模型-创建不同分类下的，相同标识符
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":${identifier},"name":${name},"modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${data2}    Set Variable    {"category":"ut-service","description":"${description}","identifier":${identifier},"name":"616312","modelSource":"${modelSource}"}
+    创建优模型    ${data2}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    删除优模型    ${data2}
+
+创建优模型-创建不同分类下的，相同名称
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${data2}    Set Variable    {"category":"ut-service","description":"${description}","identifier":"fasdf","name":${name},"modelSource":"${modelSource}"}
+    创建优模型    ${data2}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    删除优模型    ${data2}
+
+创建优模型-管理者创建自定义优模型
+    [Documentation]    创建优模型-正常创建
+    管理者获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    error
+    Should Be Equal As Strings    ${msg}    access_denied
+
+删除优模型-category为后台，填写设备来源utyun
+    [Documentation]    创建优模型-category为后台，填写设备来源utyun
+    [Setup]
+    获取token
+    ${category}    Set Variable    ut-service
+    ${modelSource}    Set Variable    utyun
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    删除优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    [Teardown]
+
+删除优模型-category 填写其他字符 at
+    [Documentation]    创建优模型-category 填写其他字符 at
+    [Setup]
+    获取token
+    ${category}    Set Variable    at
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    ${data2}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data2}
+    删除优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    category:输入的模型分类无效; \
+    删除优模型    ${data2}
+    [Teardown]
+
+删除优模型-category填写空格
+    [Documentation]    创建优模型-category填写空格
+    [Setup]
+    获取token
+    ${category}    Set Variable
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Comment    Should Be Equal As Strings    ${msg}    category:输入的模型分类无效; category:模型分类不能为空; \
+    Should Start With    ${msg}    category:
+    删除优模型    ${data1}
+    [Teardown]
+
+删除优模型-category填写空字符串
+    [Documentation]    创建优模型-category填写空字符串
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    category:
+    删除优模型    ${data1}
+    [Teardown]
+
+删除优模型-category填写空字符串null
+    [Documentation]    创建优模型-category填写空字符串
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"null","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    category:
+    删除优模型    ${data1}
+    [Teardown]
+
+删除优模型-category填写数字类型null
+    [Documentation]    创建优模型-category填写空字符串
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":null,"description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    category:
+    删除优模型    ${data1}
+    [Teardown]
+
+删除优模型-category参数不填写
+    [Documentation]    创建优模型-category参数不填写
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    category:模型分类不能为空; \
+    [Teardown]
+
+删除优模型-identifier参数不填写
+    [Documentation]    创建优模型-identifier参数不填写
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    identifier:模型标识符不能为空; \
+    [Teardown]
+
+删除优模型-identifier填写空格
+    [Documentation]    创建优模型-category填写空格
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":" \ ","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    identifier
+    删除优模型    ${data1}
+    [Teardown]
+
+删除优模型-identifier填写空字符串
+    [Documentation]    创建优模型-category填写空字符串
+    [Setup]
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    identifier
+    删除优模型    ${data1}
+    [Teardown]
+
+删除优模型-identifier填写重复的
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    优模型标识符已存在
+    删除优模型    ${data1}
+
+删除优模型-identifier填写被删除的
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+删除优模型-identifier填写输入50字符
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${identifier}    Set Variable    12345678901234567890123456789012345678901234567890
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+删除优模型-identifier填写输入51字符
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${identifier}    Set Variable    012345678901234567890123456789012345678901234567890
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Start With    ${msg}    identifier:不超过50个字符;
+
+删除优模型-identifier填写大小写字母，数字，下划线
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${identifier}    Set Variable    dasdDAF123_
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+删除优模型-identifier填写填写特殊字符——（&{}￥%……
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${identifier}    Set Variable    ————(*%{
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    identifier:标识符格式有误，仅支持字母，数字，下划线; \
+
+删除优模型-identifier填写字符串类型 null
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${identifier}    Set Variable    null
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":"${identifier}","name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    log    ${addr.text}
+    Should Be Equal As Strings    ${addr.status_code}    200
+    删除优模型    ${data1}
+
+删除优模型-identifier填写数字类型null
+    [Documentation]    创建优模型-正常创建
+    获取token
+    ${data1}    Set Variable    {"category":"${category}","description":"${description}","identifier":null,"name":"${name}","modelSource":"${modelSource}"}
+    创建优模型    ${data1}
+    ${response}    To Json    ${addr.content}
+    ${msg}    Get From Dictionary    ${response}    utMsg
+    Should Be Equal As Strings    ${msg}    identifier:模型标识符不能为空; \
+
+*** Keywords ***
+获取token
+    ${dict}    Create Dictionary    Content-Type=application/x-www-form-urlencoded    Authorization=Basic c3NvLWdhdGV3YXk6c3NvLWdhdGV3YXktc2VjcmV0
+    Create Session    api    https://oauthuat.utcook.com
+    ${data}    Create Dictionary    username=scf_dev    password=Ut123456    grant_type=password    scope=read
+    ${addr}    Post Request    api    /uaa/oauth/login    headers=${dict}    data=${data}
+    ${responsedata}    to json    ${addr.content}
+    ${str}    Get from Dictionary    ${responsedata}    access_token
+    set suite variable    ${str}
+
+创建优模型
+    [Arguments]    ${data1}
+    ${Header}    Create Dictionary    Content-Type=application/json    Authorization=bearer ${str}
+    Create Session    api    https://mobileuat.utcook.com
+    ${data}    Set Variable    ${data1}
+    ${addr}    Post Request    api    /utmodel/modelDeveloper/createProfile    headers=${Header}    data=${data}
+    set suite variable    ${addr}
+
+删除优模型
+    [Arguments]    ${data1}
+    ${Header}    Create Dictionary    Content-Type=application/json    Authorization=bearer ${str}
+    Create Session    api    https://mobileuat.utcook.com
+    ${data}    Set Variable    ${data1}
+    ${addr}    Post Request    api    /utmodel/modelDeveloper/delete    headers=${Header}    data=${data}
+    set suite variable    ${addr}
+
+新建事件
+    [Arguments]    ${data1}
+    ${Header}    Create Dictionary    Content-Type=application/json    Authorization=bearer ${str}
+    Create Session    api    https://mobileuat.utcook.com
+    ${data}    Set Variable    ${data1}
+    ${addr}    Post Request    api    /utmodel/modelEventDeveloper/create    headers=${Header}    data=${data}
+    Comment    Comment    log    ${addr.text}
+    Comment    ${response}    To Json    ${addr.text}
+    set suite variable    ${addr}
+
+删除事件
+    [Arguments]    ${data1}
+    ${Header}    Create Dictionary    Content-Type=application/json    Authorization=bearer ${str}
+    Create Session    api    https://mobileuat.utcook.com
+    ${data}    Set Variable    ${data1}
+    ${addr}    Post Request    api    /utmodel/modelEventDeveloper/delete    headers=${Header}    data=${data}
+    Comment    Comment    log    ${addr.text}
+    Comment    ${response}    To Json    ${addr.text}
+    set suite variable    ${addr}
+
+查询事件
+    [Arguments]    ${data1}
+    ${Header}    Create Dictionary    Content-Type=application/json    Authorization=bearer ${str}
+    Create Session    api    https://mobileuat.utcook.com
+    ${data}    Set Variable    ${data1}
+    ${addr}    Post Request    api    /utmodel/modelEventDeveloper/find    headers=${Header}    data=${data}
+    Comment    Comment    log    ${addr.text}
+    Comment    ${response}    To Json    ${addr.text}
+    set suite variable    ${addr}
+
+获取指定优模型的事件列表
+    [Arguments]    ${data1}
+    ${Header}    Create Dictionary    Content-Type=application/json    Authorization=bearer ${str}
+    Create Session    api    https://mobileuat.utcook.com
+    ${data}    Set Variable    ${data1}
+    ${addr}    Post Request    api    /utmodel/modelEventDeveloper/list    headers=${Header}    data=${data}
+    Comment    Comment    log    ${addr.text}
+    Comment    ${response}    To Json    ${addr.text}
+    set suite variable    ${addr}
+
+分页查询事件信息
+    [Arguments]    ${data1}
+    ${Header}    Create Dictionary    Content-Type=application/json    Authorization=bearer ${str}
+    Create Session    api    https://mobileuat.utcook.com
+    ${data}    Set Variable    ${data1}
+    ${addr}    Post Request    api    /utmodel/modelEventDeveloper/query    headers=${Header}    data=${data}
+    Comment    Comment    log    ${addr.text}
+    Comment    ${response}    To Json    ${addr.text}
+    set suite variable    ${addr}
+
+修改事件
+    [Arguments]    ${data1}
+    ${Header}    Create Dictionary    Content-Type=application/json    Authorization=bearer ${str}
+    Create Session    api    https://mobileuat.utcook.com
+    ${data}    Set Variable    ${data1}
+    ${addr}    Post Request    api    /utmodel/modelEventDeveloper/update    headers=${Header}    data=${data}
+    Comment    Comment    log    ${addr.text}
+    Comment    ${response}    To Json    ${addr.text}
+    set suite variable    ${addr}
+
+管理者获取token
+    ${dict}    Create Dictionary    Content-Type=application/x-www-form-urlencoded    Authorization=Basic c3NvLWdhdGV3YXk6c3NvLWdhdGV3YXktc2VjcmV0
+    Create Session    api    https://oauthuat.utcook.com
+    ${data}    Create Dictionary    username=scf_admin    password=Ut123456    grant_type=password    scope=read
+    ${addr}    Post Request    api    /uaa/oauth/login    headers=${dict}    data=${data}
+    ${responsedata}    to json    ${addr.content}
+    ${str}    Get from Dictionary    ${responsedata}    access_token
+    set suite variable    ${str}
+
+管理者创建优模型
+    [Arguments]    ${data1}
+    ${Header}    Create Dictionary    Content-Type=application/json    Authorization=bearer ${str}
+    Create Session    api    https://mobileuat.utcook.com
+    ${data}    Set Variable    ${data1}
+    ${addr}    Post Request    api    /utmodel/modelDeveloper/createProfile    headers=${Header}    data=${data}
+    set suite variable    ${addr}
